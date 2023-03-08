@@ -8,7 +8,7 @@ class Eigendata:
     def authenticate(self, *args, **kwargs):
         raise_not_implemeneted()
 
-    def train(self, *args, **kwargs):
+    def generate_rules(self, *args, **kwargs):
         raise_not_implemeneted()
 
     def predict(self, *args, **kwargs):
