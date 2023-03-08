@@ -13,3 +13,6 @@ class Eigendata:
 
     def predict(self, *args, **kwargs):
         raise_not_implemeneted()
+
+    def load_rule(self, *args, **kwargs):
+        raise_not_implemeneted()
