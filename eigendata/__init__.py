@@ -1,3 +1,3 @@
-from .eigendata import authenticate, predict, train
+from .eigendata import Eigendata
 
-__all__ = ["authenticate", "predict", "train"]
+__all__ = ["Eigendata"]
