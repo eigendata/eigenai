@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "eigendata"
-version = "0.1.2"
+version = "0.1.3"
 description = "Client library to communicate with eigendata ML systems"
 authors = ["bjornaer <max@eigendata.ai>"]
 license = "Apache 2.0"
