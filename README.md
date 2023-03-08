@@ -34,6 +34,9 @@ print(f"{"Yes" if prediction["fraud"] == True else "No"}")
 
 # run it with a rule you already had
 my_old_rule = "I already have a rule in my system, can I use it?"
+prediction = engine.predict(name="fraud_detection", data=datapoint, raw_rule=my_old_rule)
+
+# store it for long term use
 rule_id = engine.load_rule(my_old_rule)
 prediction = engine.predict(name="fraud_detection", data=datapoint, rule_id=rule_id)
 ```
