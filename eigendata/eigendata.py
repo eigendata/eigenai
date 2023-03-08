@@ -1,13 +1,13 @@
 from eigendata.exceptions import raise_not_implemeneted
 
 
-def authenticate():
+def authenticate(*args, **kwargs):
     raise_not_implemeneted()
 
 
-def train():
+def train(*args, **kwargs):
     raise_not_implemeneted()
 
 
-def predict():
+def predict(*args, **kwargs):
     raise_not_implemeneted()
