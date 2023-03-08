@@ -1,7 +1,6 @@
 import json
 from typing import Any, Dict
-
-import urllib3
+from urllib import request
 
 
 def post(
@@ -11,15 +10,27 @@ def post(
     data: Dict[str, Any] = {},
 ):
     """"""
-    encoded_body = json.dumps(body)
-    http = urllib3.PoolManager()
-    # {'Content-Type': 'application/json'}
-    r = http.request("POST", url, headers=headers, body=encoded_body, data=data)
+    data = json.dumps(body)
 
-    return r.read()
+    # Convert to String
+    data = str(data)
+
+    # Convert string to byte
+    data = data.encode("utf-8")
+
+    # Post Method is invoked if data != None
+    req = request.Request(url, data=data, headers=headers, method="POST")
+
+    # Response
+    resp = request.urlopen(req)
+
+    return resp
 
 
 def get(url: str = "http://localhost:8080/", headers: Dict[str, str] = {"Content-Type": "application/json"}):
-    http = urllib3.PoolManager()
-    r = http.request("GET", url, headers=headers)
-    return r.read()
+    # Post Method is invoked if data != None
+    req = request.Request(url, headers=headers, method="GET")
+
+    # Response
+    resp = request.urlopen(req)
+    return resp
