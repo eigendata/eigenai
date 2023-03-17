@@ -1,9 +1,9 @@
 import pytest
 
-from eigendata import Eigendata
+from eigendata import RulesEngine
 
 
 def test_train():
-    model = Eigendata(api_token="garbage")
+    engine = RulesEngine(api_token="garbage")
     with pytest.raises(NotImplementedError):
-        model.predict()
+        engine.list_models()
