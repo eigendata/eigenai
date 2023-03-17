@@ -4,7 +4,7 @@ import numpy as np
 
 from eigendata import Prediction, Rules, RulesEngine
 
-engine = RulesEngine(api_token="DrTDYg_2M5FW96aOxb3YKg", api_url="https://octopus-app-qgvx4.ondigitalocean.app")
+engine = RulesEngine(api_token="<API_TOKEN_HERE>", api_url="https://octopus-app-qgvx4.ondigitalocean.app")
 
 data_path = os.path.join(os.path.dirname(__file__), "dataset.csv")
 model_id = engine.train(
