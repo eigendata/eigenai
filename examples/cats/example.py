@@ -10,16 +10,21 @@ engine = RulesEngine(api_token="<your api token>")
 
 data_path = os.path.join(os.path.dirname(__file__), "dataset.csv")
 model_id = engine.train(
-    name="example_model",
+    name="example_cat_model",
     data_path=data_path,
     target="target",
     features=["feature_01", "feature_02", "feature_03", "feature_05", "feature_06", "feature_11"],
+    control_class="cat_1",
 )
 print(model_id)
 
+models = engine.list_models()
+
+print(models)
+
 rules: Rules = engine.get_rules()
-print(rules.rule_set)
-print("feature importance:\n", rules.importance)
+print("rules set:\n", rules.rule_set, "\n\n")
+print("feature importance:\n", rules.importance, "\n\n")
 
 cat_datapoint = [
     0,
@@ -46,3 +51,5 @@ cat_datapoint = [
 datapoint = np.array([cat_datapoint], dtype=np.float32)
 
 prediction: Prediction = engine.predict(datapoint=datapoint)
+
+print("prediction result: ", prediction.result)

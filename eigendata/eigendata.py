@@ -3,7 +3,7 @@ from typing import Any, List, Optional
 
 import numpy as np
 import pandas as pd
-from requests import post
+import requests
 
 from eigendata.exceptions import raise_missing_argument, raise_not_implemented
 from eigendata.schemas import (
@@ -18,7 +18,7 @@ from eigendata.schemas import (
 
 
 class RulesEngine:
-    def __init__(self, api_token: str, api_url: Optional[str] = "b.eigendata.ai") -> None:
+    def __init__(self, api_token: str, api_url: Optional[str] = "https://api.eigendata.ai") -> None:
         self.token = os.getenv("EIGEN_API_TOKEN", api_token)
         self.api_url = api_url
         self.dataset: pd.DataFrame = None
@@ -37,12 +37,13 @@ class RulesEngine:
         self,
         name: str,
         data_path: Optional[str],
-        data: Optional[pd.DataFrame],
         target: str,
+        control_class: str,
         features: Optional[List[str]],
-        split: Optional[float],
-        balance: Optional[float],
-        complexity: Optional[int],
+        data: Optional[pd.DataFrame] = None,
+        split: Optional[float] = 0.25,
+        balance: Optional[float] = 0,
+        complexity: Optional[int] = 10,
     ) -> int:
         """
         Returns the trained model id. Sets this model as default for the RulesEngine class.
@@ -57,6 +58,8 @@ class RulesEngine:
             pandas DataFrame object containing the dataset.
         target : str
             Name of the Target column.
+        control_class : str
+            One of the target classes. Required for metric generation purposes.
         split : float, Optional
             Which percentage of the dataset to be used for testing. > 0 and < 1.
         balance : float, Optional
@@ -71,13 +74,15 @@ class RulesEngine:
             Trained model id for future use. This gets set as default use within the class instance.
         """
         train_url = f"{self.api_url}/train"
-        headers = {"Content-Type": "application/json", "Authentication": f"Bearer {self.token}"}
+        headers = {"Authorization": f"Bearer {self.token}"}
+
         self._load_data(data_path, data)
 
         data = Data(
             name=name,
             dataset=encode_data(self.dataset),
             target=target,
+            control_class=control_class,
             features=features,
             balance=balance,
             split=split,
@@ -86,53 +91,50 @@ class RulesEngine:
 
         self.data = data
 
-        response = post(train_url, headers=headers, data=data)
-        return response.json()["model_id"]
+        response = requests.post(url=train_url, headers=headers, json=data.dict())
+        self.model_id = response.json()["id"]
+        return response.json()["id"]
 
     def authenticate(self, username: str, password: str):
         auth_url = f"{self.api_url}/token"
         form_data = {"username": username, "password": password}
-        res = post(auth_url, data=form_data)
+        res = requests.post(auth_url, data=form_data)
         self.token = res.json()["access_token"]
 
-    def get_rules(self, model_id: Optional[int]) -> Rules:
+    def get_rules(self, model_id: Optional[int] = None) -> Rules:
         gen_rules_url = f"{self.api_url}/rules/gen"
-        headers = {"Content-Type": "application/json", "Authentication": f"Bearer {self.token}"}
-        data = self.data
-        data["model_id"] = model_id or self.model_id
-        res = post(gen_rules_url, headers=headers, data=self.data)
+        headers = {"Authorization": f"Bearer {self.token}"}
+        self.data.model_id = model_id or self.model_id
+        res = requests.post(gen_rules_url, headers=headers, json=self.data.dict())
         res = res.json()
         rules = Rules(rule_set=decode_data(res["rule_set"]), importance=decode_data(res["importance"]))
         return rules
 
     def list_models(self) -> Any:
-        raise_not_implemented()
-        # list_models = f"{self.api_url}/models"
-        # headers = {"Content-Type": "application/json", "Authentication": f"Bearer {self.token}"}
-        # res = get(list_models, headers=headers)
-        # models = res.json()
-        # print(models)
-        # return models
+        list_models = f"{self.api_url}/models"
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
+        res = requests.get(url=list_models, headers=headers)
+        models = res.json()
+        return models
 
-    def predict(self, datapoint: np.array, model_id: Optional[int]) -> Prediction:
+    def predict(self, datapoint: np.array, model_id: Optional[int] = None) -> Prediction:
         predict_url = f"{self.api_url}/predict"
-        req = PredictRequest(datapoint=encode_data(datapoint), model_id=model_id or self.model_id)
-        headers = {"Content-Type": "application/json", "Authentication": f"Bearer {self.token}"}
-        res = post(predict_url, headers=headers, data=req)
-        prediction = Prediction(datapoint=datapoint, result=res.json()["result"])
+        mid = model_id or self.model_id
+        req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
+        res = requests.post(predict_url, headers=headers, json=req.dict())
+        prediction = Prediction(datapoint=datapoint, result=decode_data(res.json()["result"]))
         return prediction
 
-    def eval_rule(self, datapoint: pd.DataFrame, raw_rule: Optional[str], rule_id: Optional[int]) -> Prediction:
+    def eval_rule(
+        self, datapoint: pd.DataFrame, raw_rule: Optional[str] = None, rule_id: Optional[int] = None
+    ) -> Prediction:
         eval_url = f"{self.api_url}/rules/eval"
         req = RuleEvalRequest(datapoint=encode_data(datapoint), raw_rule=raw_rule, rule_id=rule_id)
-        headers = {"Content-Type": "application/json", "Authentication": f"Bearer {self.token}"}
-        res = post(eval_url, headers=headers, data=req)
-        prediction = Prediction(datapoint=datapoint, result=res.json()["result"])
+        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
+        res = requests.post(eval_url, headers=headers, json=req.dict())
+        prediction = Prediction(datapoint=datapoint, result=decode_data(res.json()["result"]))
         return prediction
 
     def upload_rule(self, *args, **kwargs):
         raise_not_implemented()
-
-
-# rules.rules # me da el dataframe con lass reglas y metricas
-# rules.importance # lista de tuplas ('feaure', score), (featr...)

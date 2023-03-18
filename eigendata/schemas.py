@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any, List, Optional
 
 import pandas as pd
+from pydantic import BaseModel
 
 
 def encode_data(data: pd.DataFrame) -> str:
@@ -17,7 +18,7 @@ def decode_data(encoded_data: str) -> pd.DataFrame:
     return pickle.loads(base64.b64decode(encoded_data.encode()))
 
 
-class Data:  # type: ignore
+class Data(BaseModel):  # type: ignore
     name: str
     description: Optional[str] = None
     dataset: str  # encoded dataset
@@ -30,18 +31,18 @@ class Data:  # type: ignore
     model_id: Optional[int]
 
 
-class APIKeyRequest:
+class APIKeyRequest(BaseModel):
     name: str
     expires: int
 
 
-class RuleEvalRequest:
+class RuleEvalRequest(BaseModel):
     raw_rule: Optional[str]
     rule_id: Optional[str]
     datapoint: str
 
 
-class PredictRequest:
+class PredictRequest(BaseModel):
     model_id: int | str
     datapoint: str
 
