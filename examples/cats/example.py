@@ -16,15 +16,15 @@ model_id = engine.train(
     features=["feature_01", "feature_02", "feature_03", "feature_05", "feature_06", "feature_11"],
     control_class="cat_1",
 )
-print(model_id)
+print("model ID: ", model_id, "\n\n")
 
 models = engine.list_models()
 
-print(models)
+print("Model List\n", models, "\n\n")
 
 rules: Rules = engine.get_rules()
-print("rules set:\n", rules.rule_set, "\n\n")
-print("feature importance:\n", rules.importance, "\n\n")
+print("rules set: \n", rules.rule_set, "\n\n")
+print("feature importance: \n", rules.importance, "\n\n")
 
 cat_datapoint = [
     0,

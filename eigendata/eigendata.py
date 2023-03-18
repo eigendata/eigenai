@@ -1,5 +1,5 @@
 import os
-from typing import Any, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -110,12 +110,12 @@ class RulesEngine:
         rules = Rules(rule_set=decode_data(res["rule_set"]), importance=decode_data(res["importance"]))
         return rules
 
-    def list_models(self) -> Any:
+    def list_models(self) -> pd.DataFrame:
         list_models = f"{self.api_url}/models"
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.get(url=list_models, headers=headers)
         models = res.json()
-        return models
+        return pd.DataFrame.from_dict(models)
 
     def predict(self, datapoint: np.array, model_id: Optional[int] = None) -> Prediction:
         predict_url = f"{self.api_url}/predict"
