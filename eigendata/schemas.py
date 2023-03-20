@@ -27,7 +27,7 @@ class Data(BaseModel):  # type: ignore
     split: Optional[float] = 0.25
     balance: Optional[float] = 0
     max_depth: Optional[int] = 10  # create restriction from 1-32
-    control_class: Optional[str]  # class to be used to generate metrics
+    control_class: Optional[str | int]  # class to be used to generate metrics
     model_id: Optional[int]
 
 

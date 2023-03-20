@@ -38,7 +38,7 @@ class RulesEngine:
         name: str,
         data_path: Optional[str],
         target: str,
-        control_class: str,
+        control_class: str | int,
         features: Optional[List[str]],
         data: Optional[pd.DataFrame] = None,
         split: Optional[float] = 0.25,
@@ -58,7 +58,7 @@ class RulesEngine:
             pandas DataFrame object containing the dataset.
         target : str
             Name of the Target column.
-        control_class : str
+        control_class : str | int
             One of the target classes. Required for metric generation purposes.
         split : float, Optional
             Which percentage of the dataset to be used for testing. > 0 and < 1.
