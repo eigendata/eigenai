@@ -4,8 +4,8 @@ from typing import List, Optional
 import pandas as pd
 import requests
 
-from eigendaten.exceptions import raise_missing_argument, raise_not_implemented
-from eigendaten.schemas import (
+from eigenrules.exceptions import raise_missing_argument, raise_not_implemented
+from eigenrules.schemas import (
     Data,
     Prediction,
     PredictRequest,
@@ -42,7 +42,7 @@ class RulesEngine:
         data: Optional[pd.DataFrame] = None,
         split: Optional[float] = 0.25,
         balance: Optional[float] = 0,
-        complexity: Optional[int] = 10,
+        complexity: Optional[int] = 10,  # from 1 to 32
     ) -> int:
         """
         Returns the trained model id. Sets this model as default for the RulesEngine class.

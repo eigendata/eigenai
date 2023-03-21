@@ -2,13 +2,15 @@ import os
 
 import pandas as pd
 
-from eigendaten import Prediction, Rules, RulesEngine
+from eigenrules import Prediction, Rules, RulesEngine
 
 # set the api token as an ENV var under EIGEN_API_TOKEN or pass it as an arg;
 # alternativelly call engine.authenticate(username, password)
-engine = RulesEngine(api_token="<your api token>")
+print("creating RulesEngine instance")
+engine = RulesEngine(api_token="xEuRNqR5QG3zBqwQpwEUQw")
 
 data_path = os.path.join(os.path.dirname(__file__), "dataset.csv")
+print("Training model")
 model_id = engine.train(
     name="example_fraud_model",
     data_path=data_path,
@@ -21,7 +23,7 @@ print("model ID: ", model_id, "\n\n")
 models = engine.list_models()
 
 print("Model List\n", models, "\n\n")
-
+print("getting rules")
 rules: Rules = engine.get_rules()
 print("rules set: \n", rules.rule_set, "\n\n")
 print("feature importance: \n", rules.importance, "\n\n")
@@ -40,7 +42,7 @@ user_data = {
     "seconds_from_order": [393],
 }
 datapoint = pd.DataFrame.from_dict(user_data)
-
+print("running prediction")
 prediction: Prediction = engine.predict(datapoint=datapoint)
 
 print("prediction result: ", prediction.result)
