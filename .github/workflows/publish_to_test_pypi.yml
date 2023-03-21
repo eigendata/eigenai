@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 name: Publish Eigendata 🐍 distributions 📦 to TestPyPI
-=======
-name: Publish Pipeline-ai 🐍 distributions 📦 to TestPyPI
->>>>>>> 55fdc07 (eigendata client initial commit)
 
 on:
   push:
@@ -10,11 +6,7 @@ on:
       - main
 jobs:
   build-and-publish:
-<<<<<<< HEAD
     name: Build and publish Eigendata 🐍 distributions 📦 to TestPyPI
-=======
-    name: Build and publish Pipeline-ai 🐍 distributions 📦 to TestPyPI
->>>>>>> 55fdc07 (eigendata client initial commit)
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
