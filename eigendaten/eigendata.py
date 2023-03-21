@@ -4,8 +4,8 @@ from typing import List, Optional
 import pandas as pd
 import requests
 
-from eigendata.exceptions import raise_missing_argument, raise_not_implemented
-from eigendata.schemas import (
+from eigendaten.exceptions import raise_missing_argument, raise_not_implemented
+from eigendaten.schemas import (
     Data,
     Prediction,
     PredictRequest,
