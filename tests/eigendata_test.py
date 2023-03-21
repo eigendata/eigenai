@@ -1,6 +1,6 @@
 import pytest
 
-from eigendata import RulesEngine
+from eigendaten import RulesEngine
 
 
 def test_train():
