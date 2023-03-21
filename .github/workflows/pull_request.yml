@@ -20,7 +20,7 @@ jobs:
         with:
           ignore: "E203,W503"
           max-line-length: "120"
-          path: "./eigendata"
+          path: "./eigenrules"
 
   isort:
     runs-on: ubuntu-latest
