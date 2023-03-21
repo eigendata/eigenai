@@ -1,6 +1,6 @@
 import os
 
-import numpy as np
+import pandas as pd
 
 from eigendata import Prediction, Rules, RulesEngine
 
@@ -26,6 +26,29 @@ rules: Rules = engine.get_rules()
 print("rules set: \n", rules.rule_set, "\n\n")
 print("feature importance: \n", rules.importance, "\n\n")
 
+cat_data_columns = [
+    "feature_01",
+    "feature_02",
+    "feature_03",
+    "feature_04",
+    "feature_05",
+    "feature_06",
+    "feature_07",
+    "feature_08",
+    "feature_09",
+    "feature_10",
+    "feature_11",
+    "feature_12",
+    "feature_13",
+    "feature_14",
+    "feature_15",
+    "feature_16",
+    "feature_17",
+    "feature_18",
+    "feature_19",
+    "feature_20",
+]
+
 cat_datapoint = [
     0,
     0,
@@ -48,7 +71,7 @@ cat_datapoint = [
     -0.8865517154684772,
     2.087181550139055,
 ]
-datapoint = np.array([cat_datapoint], dtype=np.float32)
+datapoint = pd.DataFrame(cat_datapoint, columns=cat_data_columns)
 
 prediction: Prediction = engine.predict(datapoint=datapoint)
 

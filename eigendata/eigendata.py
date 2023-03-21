@@ -1,7 +1,6 @@
 import os
 from typing import List, Optional
 
-import numpy as np
 import pandas as pd
 import requests
 
@@ -117,7 +116,7 @@ class RulesEngine:
         models = res.json()
         return pd.DataFrame.from_dict(models)
 
-    def predict(self, datapoint: np.array, model_id: Optional[int] = None) -> Prediction:
+    def predict(self, datapoint: pd.DataFrame, model_id: Optional[int] = None) -> Prediction:
         predict_url = f"{self.api_url}/predict"
         mid = model_id or self.model_id
         req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
