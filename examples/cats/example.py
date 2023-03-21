@@ -76,3 +76,4 @@ datapoint = pd.DataFrame(cat_datapoint, columns=cat_data_columns)
 prediction: Prediction = engine.predict(datapoint=datapoint)
 
 print("prediction result: ", prediction.result)
+print("prediction probabilities: ", prediction.probabilities)

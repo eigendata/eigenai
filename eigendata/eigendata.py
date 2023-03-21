@@ -122,7 +122,12 @@ class RulesEngine:
         req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.post(predict_url, headers=headers, json=req.dict())
-        prediction = Prediction(datapoint=datapoint, result=decode_data(res.json()["result"]))
+        res_json = res.json()
+        prediction = Prediction(
+            datapoint=datapoint,
+            result=decode_data(res_json["result"]),
+            probabilities=decode_data(res_json["probabilities"]),
+        )
         return prediction
 
     def eval_rule(

@@ -1,7 +1,7 @@
 import base64
 import pickle
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from pydantic import BaseModel
@@ -51,6 +51,7 @@ class PredictRequest(BaseModel):
 class Prediction:
     datapoint: pd.DataFrame
     result: Any
+    probabilities: Dict[str, float]
 
 
 @dataclass
