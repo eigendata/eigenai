@@ -1,7 +1,7 @@
 import base64
 import pickle
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 from pydantic import BaseModel
@@ -27,7 +27,7 @@ class Data(BaseModel):  # type: ignore
     split: Optional[float] = 0.25
     balance: Optional[float] = 0
     max_depth: Optional[int] = 10  # create restriction from 1-32
-    control_class: Optional[str]  # class to be used to generate metrics
+    control_class: Optional[str | int]  # class to be used to generate metrics
     model_id: Optional[int]
 
 
@@ -51,6 +51,7 @@ class PredictRequest(BaseModel):
 class Prediction:
     datapoint: pd.DataFrame
     result: Any
+    probabilities: Dict[str, float]
 
 
 @dataclass
