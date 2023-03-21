@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "eigendata"
+name = "eigendaten"
 version = "0.1.5"
 description = "Client library to communicate with eigendata ML systems"
 authors = ["bjornaer <max@eigendata.ai>"]
