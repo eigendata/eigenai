@@ -1,6 +1,6 @@
 import os
 
-import numpy as np
+import pandas as pd
 
 from eigendata import Prediction, Rules, RulesEngine
 
@@ -26,9 +26,22 @@ rules: Rules = engine.get_rules()
 print("rules set: \n", rules.rule_set, "\n\n")
 print("feature importance: \n", rules.importance, "\n\n")
 
-user_datapoint = [886, 0.635851365592393, 1614, "premium", 15, "restaurant", 46, "debit", 0.6276506990427705, 393]
-datapoint = np.array([user_datapoint], dtype=np.float32)
+# in a dict each key is a column with a list of values under it
+user_data = {
+    "amount": [886],
+    "amount_ratio": [0.635851365592393],
+    "seconds_from_login": [1614],
+    "user_level": ["premium"],
+    "orders_qty": [15],
+    "order_type": ["restaurant"],
+    "user_age": [46],
+    "transaction_type": ["debit"],
+    "product_risk": [0.6276506990427705],
+    "seconds_from_order": [393],
+}
+datapoint = pd.DataFrame.from_dict(user_data)
 
 prediction: Prediction = engine.predict(datapoint=datapoint)
 
 print("prediction result: ", prediction.result)
+print("prediction probabilities: ", prediction.probabilities)

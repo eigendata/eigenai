@@ -1,7 +1,6 @@
 import os
 from typing import List, Optional
 
-import numpy as np
 import pandas as pd
 import requests
 
@@ -117,13 +116,18 @@ class RulesEngine:
         models = res.json()
         return pd.DataFrame.from_dict(models)
 
-    def predict(self, datapoint: np.array, model_id: Optional[int] = None) -> Prediction:
+    def predict(self, datapoint: pd.DataFrame, model_id: Optional[int] = None) -> Prediction:
         predict_url = f"{self.api_url}/predict"
         mid = model_id or self.model_id
         req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.post(predict_url, headers=headers, json=req.dict())
-        prediction = Prediction(datapoint=datapoint, result=decode_data(res.json()["result"]))
+        res_json = res.json()
+        prediction = Prediction(
+            datapoint=datapoint,
+            result=decode_data(res_json["result"]),
+            probabilities=decode_data(res_json["probabilities"]),
+        )
         return prediction
 
     def eval_rule(
