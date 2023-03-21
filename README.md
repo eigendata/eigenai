@@ -1,14 +1,14 @@
-# eigendata
+# eigenrules
 
 Powered by [eigendata.ai](https://eigendata.ai)
 
 # installation
 
-`pip install eigendata`
+`pip install eigenrules`
 
 or
 
-`poetry add eigendata`
+`poetry add eigenrules`
 
 # usage
 
