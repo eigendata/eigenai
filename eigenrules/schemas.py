@@ -51,7 +51,7 @@ class PredictRequest(BaseModel):
 class Prediction:
     datapoint: pd.DataFrame
     result: Any
-    probabilities: Dict[str, float]
+    confidence: Dict[str, float]
 
 
 @dataclass
