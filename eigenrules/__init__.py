@@ -1,4 +1,4 @@
 from .eigendata import RulesEngine
-from .schemas import Prediction, Rules
+from .schemas import FeatureImportance, Prediction, Rules
 
-__all__ = ["RulesEngine", "Rules", "Prediction"]
+__all__ = ["FeatureImportance", "RulesEngine", "Rules", "Prediction"]

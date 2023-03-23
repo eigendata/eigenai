@@ -58,3 +58,8 @@ class Prediction:
 class Rules:
     rule_set: pd.DataFrame
     importance: pd.DataFrame  # each feature + their relevance score
+
+
+@dataclass
+class FeatureImportance:
+    table: pd.DataFrame

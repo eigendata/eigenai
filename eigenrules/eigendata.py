@@ -7,6 +7,7 @@ import requests
 from eigenrules.exceptions import raise_missing_argument, raise_not_implemented
 from eigenrules.schemas import (
     Data,
+    FeatureImportance,
     Prediction,
     PredictRequest,
     RuleEvalRequest,
@@ -129,6 +130,14 @@ class RulesEngine:
             confidence=decode_data(res_json["confidence"]),
         )
         return prediction
+
+    def explain(self, model_id: Optional[int] = None) -> FeatureImportance:
+        importance_url = f"{self.api_url}/importance"
+        headers = {"Authorization": f"Bearer {self.token}"}
+        self.data.model_id = model_id or self.model_id
+        res = requests.post(importance_url, headers=headers, json=self.data.dict())
+        res = res.json()
+        return FeatureImportance(table=decode_data(res["importance"]))
 
     def eval_rule(
         self, datapoint: pd.DataFrame, raw_rule: Optional[str] = None, rule_id: Optional[int] = None
