@@ -126,7 +126,7 @@ class RulesEngine:
         prediction = Prediction(
             datapoint=datapoint,
             result=decode_data(res_json["result"]),
-            probabilities=decode_data(res_json["probabilities"]),
+            confidence=decode_data(res_json["confidence"]),
         )
         return prediction
 

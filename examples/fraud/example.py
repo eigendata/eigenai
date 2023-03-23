@@ -46,4 +46,4 @@ print("running prediction")
 prediction: Prediction = engine.predict(datapoint=datapoint)
 
 print("prediction result: ", prediction.result)
-print("prediction probabilities: ", prediction.probabilities)
+print("prediction confidence: ", prediction.confidence)
