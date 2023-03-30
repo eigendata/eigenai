@@ -116,7 +116,6 @@ class RulesEngine:
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.get(url=list_models, headers=headers)
         models = res.json()
-        print(models)
         return pd.DataFrame.from_dict(models)
 
     def predict(self, datapoint: pd.DataFrame, model_id: Optional[int] = None) -> Prediction:
