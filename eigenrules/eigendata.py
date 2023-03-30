@@ -18,9 +18,10 @@ from eigenrules.schemas import (
 
 
 class RulesEngine:
-    def __init__(self, api_token: str, api_url: Optional[str] = "https://api.eigendata.ai") -> None:
+    def __init__(self, api_token: str, api_url: Optional[str] = "https://api.eigendata.ai", api_version="v1") -> None:
         self.token = os.getenv("EIGEN_API_TOKEN", api_token)
         self.api_url = api_url
+        self.api_version = api_version
         self.dataset: pd.DataFrame = None
         self.data: Data = None
         self.model_id: int = None
@@ -73,7 +74,7 @@ class RulesEngine:
         model_id : int
             Trained model id for future use. This gets set as default use within the class instance.
         """
-        train_url = f"{self.api_url}/train"
+        train_url = f"{self.api_url}/{self.api_version}/models/train"
         headers = {"Authorization": f"Bearer {self.token}"}
 
         self._load_data(data_path, data)
@@ -102,7 +103,7 @@ class RulesEngine:
         self.token = res.json()["access_token"]
 
     def get_rules(self, model_id: Optional[int] = None) -> Rules:
-        gen_rules_url = f"{self.api_url}/rules/gen"
+        gen_rules_url = f"{self.api_url}/{self.api_version}/rules/gen"
         headers = {"Authorization": f"Bearer {self.token}"}
         self.data.model_id = model_id or self.model_id
         res = requests.post(gen_rules_url, headers=headers, json=self.data.dict())
@@ -111,15 +112,16 @@ class RulesEngine:
         return rules
 
     def list_models(self) -> pd.DataFrame:
-        list_models = f"{self.api_url}/models"
+        list_models = f"{self.api_url}/{self.api_version}/models"
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.get(url=list_models, headers=headers)
         models = res.json()
+        print(models)
         return pd.DataFrame.from_dict(models)
 
     def predict(self, datapoint: pd.DataFrame, model_id: Optional[int] = None) -> Prediction:
-        predict_url = f"{self.api_url}/predict"
         mid = model_id or self.model_id
+        predict_url = f"{self.api_url}/{self.api_version}/models/{mid}/predict"
         req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.post(predict_url, headers=headers, json=req.dict())
@@ -132,9 +134,10 @@ class RulesEngine:
         return prediction
 
     def explain(self, model_id: Optional[int] = None) -> FeatureImportance:
-        importance_url = f"{self.api_url}/explain"
+        mid = model_id or self.model_id
+        importance_url = f"{self.api_url}/{self.api_version}/models/{mid}/explain"
         headers = {"Authorization": f"Bearer {self.token}"}
-        self.data.model_id = model_id or self.model_id
+        self.data.model_id = mid
         res = requests.post(importance_url, headers=headers, json=self.data.dict())
         res = res.json()
         return FeatureImportance(table=decode_data(res["importance"]))
