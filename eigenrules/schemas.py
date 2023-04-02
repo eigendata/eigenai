@@ -43,7 +43,7 @@ class RuleEvalRequest(BaseModel):
 
 
 class PredictRequest(BaseModel):
-    model_id: int | str
+    model_id: Union[str, int]
     datapoint: str
 
 
