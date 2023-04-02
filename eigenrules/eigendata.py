@@ -12,6 +12,7 @@ from eigenrules.schemas import (
     PredictRequest,
     RuleEvalRequest,
     Rules,
+    Union,
     decode_data,
     encode_data,
 )
@@ -39,7 +40,7 @@ class RulesEngine:
         name: str,
         data_path: Optional[str],
         target: str,
-        control_class: str | int,
+        control_class: Union[str, int],
         features: Optional[List[str]],
         data: Optional[pd.DataFrame] = None,
         split: Optional[float] = 0.25,
