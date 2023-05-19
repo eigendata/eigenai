@@ -5,7 +5,7 @@ description = "Client library to communicate with eigendata ML systems"
 authors = ["bjornaer <max@eigendata.ai>"]
 license = "Apache 2.0"
 readme = "README.md"
-url = "https://eigendata.ai"
+homepage = "https://eigendata.ai"
 
 [tool.poetry.dependencies]
 python = "^3.9"
