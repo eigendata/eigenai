@@ -1,30 +1,27 @@
 import os
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import pandas as pd
 import requests
 
-from eigenrules.exceptions import raise_missing_argument, raise_not_implemented
+from eigenrules.exceptions import raise_empty_datapoint, raise_missing_argument
 from eigenrules.schemas import (
-    Data,
-    FeatureImportance,
+    AnomalyData,
     Prediction,
     PredictRequest,
-    RuleEvalRequest,
-    Rules,
-    Union,
+    SegmentationData,
     decode_data,
     encode_data,
 )
 
 
-class RulesEngine:
+class AnomalyEngine:
     def __init__(self, api_token: str, api_url: Optional[str] = "https://api.eigendata.ai", api_version="v1") -> None:
         self.token = os.getenv("EIGEN_API_TOKEN", api_token)
         self.api_url = api_url
         self.api_version = api_version
         self.dataset: pd.DataFrame = None
-        self.data: Data = None
+        self.data: SegmentationData = None
         self.model_id: int = None
 
     def _load_data(self, path: Optional[str], data: Optional[pd.DataFrame]):
@@ -39,13 +36,10 @@ class RulesEngine:
         self,
         name: str,
         data_path: Optional[str],
-        target: str,
-        control_class: Union[str, int],
         features: Optional[List[str]],
         data: Optional[pd.DataFrame] = None,
         split: Optional[float] = 0.25,
-        balance: Optional[float] = 0,
-        complexity: Optional[int] = 10,  # from 1 to 32
+        contamination: Optional[float] = None,
     ) -> int:
         """
         Returns the trained model id. Sets this model as default for the RulesEngine class.
@@ -58,16 +52,13 @@ class RulesEngine:
             Path to dataset (CSV). Required unless `data` argument is provided.
         data : pd.DataFrame, Optional
             pandas DataFrame object containing the dataset.
-        target : str
-            Name of the Target column.
-        control_class : str | int
-            One of the target classes. Required for metric generation purposes.
         split : float, Optional
             Which percentage of the dataset to be used for testing. > 0 and < 1.
         balance : float, Optional
             Value between 0 and 1 that balances the dataset classes during training sampling.
-        complexity : int, Optional
-            the higher this value the more complex the rules we can generate. Caps at 32.
+        contamination : float || string, Optional
+            if left empty, the model will do contamination auto detection.
+            This value represents expected percentage of outliers in data.
 
 
         Returns
@@ -75,20 +66,13 @@ class RulesEngine:
         model_id : int
             Trained model id for future use. This gets set as default use within the class instance.
         """
-        train_url = f"{self.api_url}/{self.api_version}/models/train"
+        train_url = f"{self.api_url}/{self.api_version}/models/anomaly/train"
         headers = {"Authorization": f"Bearer {self.token}"}
 
         self._load_data(data_path, data)
 
-        data = Data(
-            name=name,
-            dataset=encode_data(self.dataset),
-            target=target,
-            control_class=control_class,
-            features=features,
-            balance=balance,
-            split=split,
-            max_depth=complexity,
+        data = AnomalyData(
+            name=name, dataset=encode_data(self.dataset), features=features, split=split, contamination=contamination
         )
 
         self.data = data
@@ -103,15 +87,6 @@ class RulesEngine:
         res = requests.post(auth_url, data=form_data)
         self.token = res.json()["access_token"]
 
-    def get_rules(self, model_id: Optional[int] = None) -> Rules:
-        gen_rules_url = f"{self.api_url}/{self.api_version}/rules/gen"
-        headers = {"Authorization": f"Bearer {self.token}"}
-        self.data.model_id = model_id or self.model_id
-        res = requests.post(gen_rules_url, headers=headers, json=self.data.dict())
-        res = res.json()
-        rules = Rules(rule_set=decode_data(res["rule_set"]), importance=decode_data(res["importance"]))
-        return rules
-
     def list_models(self) -> pd.DataFrame:
         list_models = f"{self.api_url}/{self.api_version}/models"
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
@@ -119,9 +94,22 @@ class RulesEngine:
         models = res.json()
         return pd.DataFrame.from_dict(models)
 
-    def predict(self, datapoint: pd.DataFrame, model_id: Optional[int] = None) -> Prediction:
+    def predict(
+        self,
+        df_datapoint: Optional[pd.DataFrame] = None,
+        columns: Optional[List[str]] = [],
+        values: Optional[List[Any]] = [],
+        model_id: Optional[int] = None,
+    ) -> Prediction:
+        if df_datapoint is not None:
+            datapoint = df_datapoint
+        else:
+            datapoint = pd.DataFrame(values, columns=columns)
+        if len(datapoint.index) == 0:
+            raise_empty_datapoint()
+
         mid = model_id or self.model_id
-        predict_url = f"{self.api_url}/{self.api_version}/models/{mid}/predict"
+        predict_url = f"{self.api_url}/{self.api_version}/models/anomaly/{mid}/predict"
         req = PredictRequest(datapoint=encode_data(datapoint), model_id=mid)
         headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
         res = requests.post(predict_url, headers=headers, json=req.dict())
@@ -132,25 +120,3 @@ class RulesEngine:
             confidence=decode_data(res_json["confidence"]),
         )
         return prediction
-
-    def explain(self, model_id: Optional[int] = None) -> FeatureImportance:
-        mid = model_id or self.model_id
-        importance_url = f"{self.api_url}/{self.api_version}/models/{mid}/explain"
-        headers = {"Authorization": f"Bearer {self.token}"}
-        self.data.model_id = mid
-        res = requests.post(importance_url, headers=headers, json=self.data.dict())
-        res = res.json()
-        return FeatureImportance(table=decode_data(res["importance"]))
-
-    def eval_rule(
-        self, datapoint: pd.DataFrame, raw_rule: Optional[str] = None, rule_id: Optional[int] = None
-    ) -> Prediction:
-        eval_url = f"{self.api_url}/rules/eval"
-        req = RuleEvalRequest(datapoint=encode_data(datapoint), raw_rule=raw_rule, rule_id=rule_id)
-        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {self.token}"}
-        res = requests.post(eval_url, headers=headers, json=req.dict())
-        prediction = Prediction(datapoint=datapoint, result=decode_data(res.json()["result"]))
-        return prediction
-
-    def upload_rule(self, *args, **kwargs):
-        raise_not_implemented()

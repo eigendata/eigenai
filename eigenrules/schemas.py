@@ -18,7 +18,7 @@ def decode_data(encoded_data: str) -> pd.DataFrame:
     return pickle.loads(base64.b64decode(encoded_data.encode()))
 
 
-class Data(BaseModel):  # type: ignore
+class SegmentationData(BaseModel):  # type: ignore
     name: str
     description: Optional[str] = None
     dataset: str  # encoded dataset
@@ -28,6 +28,16 @@ class Data(BaseModel):  # type: ignore
     balance: Optional[float] = 0
     max_depth: Optional[int] = 10  # create restriction from 1-32
     control_class: Union[str, int, None]  # class to be used to generate metrics
+    model_id: Optional[int]
+
+
+class AnomalyData(BaseModel):  # type: ignore
+    name: str
+    description: Optional[str] = None
+    dataset: str  # encoded dataset
+    features: Optional[List[str]]  # column names
+    split: Optional[float] = 0.25
+    contamination: Optional[float] = (None,)
     model_id: Optional[int]
 
 
