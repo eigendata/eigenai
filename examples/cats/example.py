@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from eigenrules import Prediction, Rules, RulesEngine
+from eigenai import Prediction, Rules, RulesEngine
 
 # set the api token as an ENV var under EIGEN_API_TOKEN or pass it as an arg;
 # alternativelly call engine.authenticate(username, password)

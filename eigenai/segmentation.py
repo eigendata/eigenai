@@ -4,12 +4,12 @@ from typing import Any, List, Optional
 import pandas as pd
 import requests
 
-from eigenrules.exceptions import (
+from eigenai.exceptions import (
     raise_empty_datapoint,
     raise_missing_argument,
     raise_not_implemented,
 )
-from eigenrules.schemas import (
+from eigenai.schemas import (
     FeatureImportance,
     Prediction,
     PredictRequest,

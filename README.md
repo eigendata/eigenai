@@ -4,11 +4,11 @@ Powered by [eigendata.ai](https://eigendata.ai)
 
 # installation
 
-`pip install eigenrules`
+`pip install eigenai`
 
 or
 
-`poetry add eigenrules`
+`poetry add eigenai`
 
 # usage
 

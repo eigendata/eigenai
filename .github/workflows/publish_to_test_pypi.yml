@@ -1,4 +1,4 @@
-name: Publish Eigendata 🐍 distributions 📦 to TestPyPI
+name: Publish EigenAI 🐍 distributions 📦 to TestPyPI
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   build-and-publish:
-    name: Build and publish Eigendata 🐍 distributions 📦 to TestPyPI
+    name: Build and publish EigenAI 🐍 distributions 📦 to TestPyPI
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
