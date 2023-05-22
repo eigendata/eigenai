@@ -4,8 +4,8 @@ from typing import Any, List, Optional
 import pandas as pd
 import requests
 
-from eigenrules.exceptions import raise_empty_datapoint, raise_missing_argument
-from eigenrules.schemas import (
+from eigenai.exceptions import raise_empty_datapoint, raise_missing_argument
+from eigenai.schemas import (
     AnomalyData,
     Prediction,
     PredictRequest,
